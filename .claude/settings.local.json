@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm view:*)",
+      "Bash(npm publish:*)",
+      "Bash(npm version:*)",
+      "Bash(git -C /Users/zhangkun/Documents/Code/my-2026/ccx add package.json README.md)",
+      "Bash(git -C /Users/zhangkun/Documents/Code/my-2026/ccx commit -m 'chore: rename package to @twoer/ccx and simplify install docs')",
+      "Bash(npm profile:*)",
+      "Bash(npm i:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(node:*)",
+      "Bash(npm link:*)",
+      "Bash(npm pack:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

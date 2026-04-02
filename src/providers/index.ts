@@ -1,9 +1,10 @@
-import * as ccSwitch from './cc-switch.mjs'
-import * as jsonFile from './json-file.mjs'
+import * as ccSwitch from './cc-switch.js'
+import * as jsonFile from './json-file.js'
+import type { ProviderSource, ProvidersResult } from '../types.js'
 
-const sources = [ccSwitch, jsonFile]
+const sources: ProviderSource[] = [ccSwitch, jsonFile]
 
-export async function loadProviders() {
+export async function loadProviders(): Promise<ProvidersResult> {
   for (const source of sources) {
     if (source.detect()) {
       try {

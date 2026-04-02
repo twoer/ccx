@@ -1,7 +1,8 @@
 import { existsSync } from 'node:fs'
 import { execSync } from 'node:child_process'
+import type { Terminal } from '../types.js'
 
-const terminals = [
+const terminals: Terminal[] = [
   {
     name: 'Ghostty',
     detect: () => existsSync('/Applications/Ghostty.app'),
@@ -29,10 +30,10 @@ const terminals = [
   },
 ]
 
-export function detectTerminals() {
+export function detectTerminals(): Terminal[] {
   return terminals.filter(t => t.detect())
 }
 
-export function getTerminal(name) {
+export function getTerminal(name: string): Terminal | undefined {
   return terminals.find(t => t.name === name)
 }

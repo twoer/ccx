@@ -4,14 +4,15 @@
   "description": "Claude Code launcher - switch providers and models with ease",
   "type": "module",
   "bin": {
-    "ccx": "./bin/ccx.mjs"
+    "ccx": "./dist/bin/ccx.js"
   },
   "files": [
-    "bin",
-    "src"
+    "dist"
   ],
   "scripts": {
-    "start": "node bin/ccx.mjs"
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/bin/ccx.js"
   },
   "keywords": [
     "claude",
@@ -25,5 +26,11 @@
     "@clack/prompts": "^0.10.0",
     "better-sqlite3": "^11.8.0",
     "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.5.0",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.2"
   }
 }

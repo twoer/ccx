@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
+import type { Provider } from '../types.js'
 
 const PROVIDERS_FILE = join(
   process.env.XDG_CONFIG_HOME || join(homedir(), '.config'),
@@ -8,15 +9,15 @@ const PROVIDERS_FILE = join(
   'providers.json',
 )
 
-export function detect() {
+export function detect(): boolean {
   return existsSync(PROVIDERS_FILE)
 }
 
-export function list() {
+export function list(): Provider[] {
   const data = JSON.parse(readFileSync(PROVIDERS_FILE, 'utf-8'))
   const providers = data.providers || []
 
-  return providers.map((p, i) => ({
+  return providers.map((p: Provider, i: number) => ({
     id: `json:${i}`,
     name: p.name,
     model: p.model || p.env?.ANTHROPIC_MODEL || 'unknown',

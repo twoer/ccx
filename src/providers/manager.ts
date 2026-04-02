@@ -1,6 +1,11 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, dirname } from 'node:path'
+import type { Provider } from '../types.js'
+
+interface ProvidersData {
+  providers: Provider[]
+}
 
 const PROVIDERS_FILE = join(
   process.env.XDG_CONFIG_HOME || join(homedir(), '.config'),
@@ -16,34 +21,34 @@ function ensureFile() {
   }
 }
 
-function load() {
+function load(): ProvidersData {
   ensureFile()
   return JSON.parse(readFileSync(PROVIDERS_FILE, 'utf-8'))
 }
 
-function save(data) {
+function save(data: ProvidersData) {
   ensureFile()
   writeFileSync(PROVIDERS_FILE, JSON.stringify(data, null, 2) + '\n')
 }
 
-export function getAll() {
+export function getAll(): Provider[] {
   return load().providers || []
 }
 
-export function add(provider) {
+export function add(provider: Provider) {
   const data = load()
   data.providers = data.providers || []
   data.providers.push(provider)
   save(data)
 }
 
-export function remove(index) {
+export function remove(index: number) {
   const data = load()
   data.providers.splice(index, 1)
   save(data)
 }
 
-export function update(index, provider) {
+export function update(index: number, provider: Provider) {
   const data = load()
   data.providers[index] = provider
   save(data)

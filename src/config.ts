@@ -11,7 +11,7 @@ function ensureDir() {
   }
 }
 
-function load() {
+function load(): Record<string, unknown> {
   ensureDir()
   if (!existsSync(CONFIG_FILE)) return {}
   try {
@@ -21,16 +21,16 @@ function load() {
   }
 }
 
-function save(config) {
+function save(config: Record<string, unknown>) {
   ensureDir()
   writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2) + '\n')
 }
 
-export function get(key) {
+export function get(key: string): unknown {
   return load()[key]
 }
 
-export function set(key, value) {
+export function set(key: string, value: unknown) {
   const config = load()
   config[key] = value
   save(config)

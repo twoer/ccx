@@ -1,14 +1,14 @@
 import { intro, outro, select, text, confirm, cancel, isCancel, log, note } from '@clack/prompts'
 import pc from 'picocolors'
-import * as manager from './providers/manager.mjs'
-import { loadProviders } from './providers/index.mjs'
+import * as manager from './providers/manager.js'
+import { loadProviders } from './providers/index.js'
 
-function guard(result) {
+function guard<T>(result: T | symbol): T {
   if (isCancel(result)) {
     cancel('Cancelled')
     process.exit(0)
   }
-  return result
+  return result as T
 }
 
 // ── ccx list ────────────────────────────────────────────
@@ -72,7 +72,7 @@ export async function add() {
     initialValue: true,
   }))
 
-  const env = {
+  const env: Record<string, string> = {
     ANTHROPIC_BASE_URL: baseUrl.trim(),
     ANTHROPIC_AUTH_TOKEN: authToken.trim(),
     ANTHROPIC_MODEL: model.trim(),
@@ -204,7 +204,7 @@ export async function edit() {
     initialValue: true,
   }))
 
-  const newEnv = {
+  const newEnv: Record<string, string> = {
     ANTHROPIC_BASE_URL: baseUrl.trim(),
     ANTHROPIC_AUTH_TOKEN: authToken.trim(),
     ANTHROPIC_MODEL: model.trim(),

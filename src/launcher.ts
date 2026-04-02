@@ -4,23 +4,25 @@ import { writeFileSync, mkdtempSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { spawn } from 'node:child_process'
-import { loadProviders } from './providers/index.mjs'
-import { detectTerminals, getTerminal } from './terminals/index.mjs'
-import * as config from './config.mjs'
-import * as commands from './commands.mjs'
+import { loadProviders } from './providers/index.js'
+import { detectTerminals, getTerminal } from './terminals/index.js'
+import * as config from './config.js'
+import * as commands from './commands.js'
+import type { ParsedArgs, ParsedFlags, Terminal } from './types.js'
 
-const VERSION = '0.1.0'
+const VERSION = '0.1.1'
 
 const SUBCOMMANDS = ['list', 'ls', 'add', 'rm', 'remove', 'edit', 'help']
 
-function parseArgs(argv) {
-  const flags = { newWindow: false, help: false, version: false, reset: false }
-  let command = null
+function parseArgs(argv: string[]): ParsedArgs {
+  const flags: ParsedFlags = { newWindow: false, help: false, version: false, reset: false, yolo: false }
+  let command: string | null = null
   let query = ''
 
   for (const arg of argv) {
     switch (arg) {
       case '--new': case '-n': flags.newWindow = true; break
+      case '--yes': case '-y': flags.yolo = true; break
       case '--help': case '-h': flags.help = true; break
       case '--version': case '-v': flags.version = true; break
       case '--reset': flags.reset = true; break
@@ -55,6 +57,7 @@ function showHelp() {
 
   ${pc.bold('Options:')}
     ${pc.cyan('-n')}, ${pc.cyan('--new')}      Open in a new terminal window
+    ${pc.cyan('-y')}, ${pc.cyan('--yes')}      Skip permissions (dangerously)
     ${pc.cyan('-h')}, ${pc.cyan('--help')}     Show this help
     ${pc.cyan('-v')}, ${pc.cyan('--version')}  Show version
     ${pc.cyan('--reset')}        Reset all configuration
@@ -76,15 +79,15 @@ function showHelp() {
 `)
 }
 
-function writeTempSettings(env) {
+function writeTempSettings(env: Record<string, string>): string {
   const dir = mkdtempSync(join(tmpdir(), 'ccx-'))
   const file = join(dir, 'settings.json')
   writeFileSync(file, JSON.stringify({ env }, null, 2))
   return file
 }
 
-async function selectTerminal() {
-  const saved = config.get('terminal')
+async function selectTerminal(): Promise<Terminal> {
+  const saved = config.get('terminal') as string | undefined
   if (saved) {
     const t = getTerminal(saved)
     if (t) return t
@@ -107,10 +110,10 @@ async function selectTerminal() {
   }
 
   config.set('terminal', result)
-  return getTerminal(result)
+  return getTerminal(result as string)!
 }
 
-export async function run(argv) {
+export async function run(argv: string[]) {
   const { flags, command, query } = parseArgs(argv)
 
   if (flags.version) {
@@ -194,18 +197,22 @@ export async function run(argv) {
   }
 
   // Write temp settings
-  const settingsFile = writeTempSettings(selected.env)
+  const settingsFile = writeTempSettings(selected!.env)
+  const yoloFlag = flags.yolo ? ' --dangerously-skip-permissions' : ''
 
   if (flags.newWindow) {
     const terminal = await selectTerminal()
     const cwd = process.cwd()
-    const cmd = `cd '${cwd}'; echo '=== Claude Code [${selected.name}] ==='; echo; claude --settings '${settingsFile}'; rm -f '${settingsFile}'; exec bash`
+    const cmd = `cd '${cwd}'; echo '=== Claude Code [${selected!.name}] ==='; echo; claude --settings '${settingsFile}'${yoloFlag}; rm -f '${settingsFile}'; exec bash`
     terminal.open(cmd)
-    outro(`${pc.green('⚡')} ${selected.name} ${pc.dim(`(${selected.model})`)} → ${pc.dim(terminal.name)}`)
+    outro(`${pc.green('⚡')} ${selected!.name} ${pc.dim(`(${selected!.model})`)} → ${pc.dim(terminal.name)}`)
   } else {
-    outro(`${pc.green('⚡')} ${selected.name} ${pc.dim(`(${selected.model})`)}`)
+    outro(`${pc.green('⚡')} ${selected!.name} ${pc.dim(`(${selected!.model})`)}`)
 
-    const child = spawn('claude', ['--settings', settingsFile], {
+    const claudeArgs = ['--settings', settingsFile]
+    if (flags.yolo) claudeArgs.push('--dangerously-skip-permissions')
+
+    const child = spawn('claude', claudeArgs, {
       stdio: 'inherit',
       env: { ...process.env },
     })
