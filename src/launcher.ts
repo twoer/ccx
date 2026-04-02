@@ -2,13 +2,15 @@ import { intro, outro, select, cancel, isCancel, log } from '@clack/prompts'
 import pc from 'picocolors'
 import { writeFileSync, mkdtempSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
-import { tmpdir } from 'node:os'
+import { tmpdir, platform } from 'node:os'
 import { spawn } from 'node:child_process'
 import { loadProviders } from './providers/index.js'
 import { detectTerminals, getTerminal } from './terminals/index.js'
 import * as config from './config.js'
 import * as commands from './commands.js'
 import type { ParsedArgs, ParsedFlags, Terminal } from './types.js'
+
+const isWin = platform() === 'win32'
 
 const VERSION = '0.1.3'
 
@@ -72,10 +74,10 @@ function showHelp() {
     ${pc.dim('$')} ccx rm           ${pc.dim('# Remove a provider')}
 
   ${pc.bold('Providers:')}
-    ${pc.cyan('cc-switch')}  ${pc.dim('auto-detected from ~/.cc-switch/cc-switch.db')}
-    ${pc.cyan('JSON file')}  ${pc.dim('configure at ~/.config/ccx/providers.json')}
+    ${pc.cyan('cc-switch')}  ${pc.dim('auto-detected from cc-switch.db')}
+    ${pc.cyan('JSON file')}  ${pc.dim(`configure at ${config.configDir}/providers.json`)}
 
-  ${pc.bold('Config:')} ${pc.dim('~/.config/ccx/config.json')}
+  ${pc.bold('Config:')} ${pc.dim(config.configFile)}
 `)
 }
 
@@ -203,7 +205,10 @@ export async function run(argv: string[]) {
   if (flags.newWindow) {
     const terminal = await selectTerminal()
     const cwd = process.cwd()
-    const cmd = `cd '${cwd}'; echo '=== Claude Code [${selected!.name}] ==='; echo; claude --settings '${settingsFile}'${yoloFlag}; rm -f '${settingsFile}'; exec bash`
+    const isWin = platform() === 'win32'
+    const cmd = isWin
+      ? `cd /d "${cwd}" & echo === Claude Code [${selected!.name}] === & echo. & claude --settings "${settingsFile}"${yoloFlag} & del /f "${settingsFile}"`
+      : `cd '${cwd}'; echo '=== Claude Code [${selected!.name}] ==='; echo; claude --settings '${settingsFile}'${yoloFlag}; rm -f '${settingsFile}'; exec bash`
     terminal.open(cmd)
     outro(`${pc.green('⚡')} ${selected!.name} ${pc.dim(`(${selected!.model})`)} → ${pc.dim(terminal.name)}`)
   } else {
@@ -215,6 +220,7 @@ export async function run(argv: string[]) {
     const child = spawn('claude', claudeArgs, {
       stdio: 'inherit',
       env: { ...process.env },
+      shell: platform() === 'win32',
     })
 
     child.on('exit', (code) => {

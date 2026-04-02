@@ -1,8 +1,15 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { homedir, platform } from 'node:os'
 import { join } from 'node:path'
 
-const CONFIG_DIR = join(process.env.XDG_CONFIG_HOME || join(homedir(), '.config'), 'ccx')
+function getConfigBaseDir(): string {
+  if (platform() === 'win32') {
+    return join(process.env.APPDATA || join(homedir(), 'AppData', 'Roaming'), 'ccx')
+  }
+  return join(process.env.XDG_CONFIG_HOME || join(homedir(), '.config'), 'ccx')
+}
+
+const CONFIG_DIR = getConfigBaseDir()
 const CONFIG_FILE = join(CONFIG_DIR, 'config.json')
 
 function ensureDir() {

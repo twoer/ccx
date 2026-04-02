@@ -1,8 +1,14 @@
 import { existsSync } from 'node:fs'
 import { execSync } from 'node:child_process'
+import { platform } from 'node:os'
+import { join } from 'node:path'
+import { homedir } from 'node:os'
 import type { Terminal } from '../types.js'
 
-const terminals: Terminal[] = [
+const isMac = platform() === 'darwin'
+const isWin = platform() === 'win32'
+
+const terminals: Terminal[] = isMac ? [
   {
     name: 'Ghostty',
     detect: () => existsSync('/Applications/Ghostty.app'),
@@ -27,6 +33,41 @@ const terminals: Terminal[] = [
     name: 'Terminal',
     detect: () => true,
     open: (cmd) => execSync(`osascript -e 'tell application "Terminal" to do script "${cmd}"'`),
+  },
+] : isWin ? [
+  {
+    name: 'Windows Terminal',
+    detect: () => {
+      try { execSync('where wt.exe', { stdio: 'pipe' }); return true } catch { return false }
+    },
+    open: (cmd) => execSync(`wt.exe bash -c "${cmd}"`, { shell: 'cmd.exe' }),
+  },
+  {
+    name: 'PowerShell',
+    detect: () => true,
+    open: (cmd) => execSync(`start powershell -NoExit -Command "${cmd}"`, { shell: 'cmd.exe' }),
+  },
+] : [
+  {
+    name: 'gnome-terminal',
+    detect: () => {
+      try { execSync('which gnome-terminal', { stdio: 'pipe' }); return true } catch { return false }
+    },
+    open: (cmd) => execSync(`gnome-terminal -- bash -c "${cmd}"`),
+  },
+  {
+    name: 'konsole',
+    detect: () => {
+      try { execSync('which konsole', { stdio: 'pipe' }); return true } catch { return false }
+    },
+    open: (cmd) => execSync(`konsole -e bash -c "${cmd}"`),
+  },
+  {
+    name: 'xterm',
+    detect: () => {
+      try { execSync('which xterm', { stdio: 'pipe' }); return true } catch { return false }
+    },
+    open: (cmd) => execSync(`xterm -e bash -c "${cmd}" &`),
   },
 ]
 

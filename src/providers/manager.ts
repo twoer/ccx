@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { homedir, platform } from 'node:os'
 import { join, dirname } from 'node:path'
 import type { Provider } from '../types.js'
 
@@ -7,11 +7,14 @@ interface ProvidersData {
   providers: Provider[]
 }
 
-const PROVIDERS_FILE = join(
-  process.env.XDG_CONFIG_HOME || join(homedir(), '.config'),
-  'ccx',
-  'providers.json',
-)
+function getConfigBaseDir(): string {
+  if (platform() === 'win32') {
+    return join(process.env.APPDATA || join(homedir(), 'AppData', 'Roaming'), 'ccx')
+  }
+  return join(process.env.XDG_CONFIG_HOME || join(homedir(), '.config'), 'ccx')
+}
+
+const PROVIDERS_FILE = join(getConfigBaseDir(), 'providers.json')
 
 function ensureFile() {
   const dir = dirname(PROVIDERS_FILE)
