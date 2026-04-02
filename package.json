@@ -1,6 +1,6 @@
 {
   "name": "ccx-run",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Claude Code launcher - switch providers and models with ease",
   "type": "module",
   "bin": {
