@@ -11,16 +11,16 @@ function guard<T>(result: T | symbol): T {
   return result as T
 }
 
-// ── ccx list ────────────────────────────────────────────
+// ── cc-run list ────────────────────────────────────────────
 
 export async function list() {
-  intro(pc.cyan(pc.bold('⚡ ccx list')))
+  intro(pc.cyan(pc.bold('⚡ cc-run list')))
 
   const { providers, source } = await loadProviders()
 
   if (providers.length === 0) {
     log.warn('No providers found')
-    outro(pc.dim('Run `ccx add` to add one'))
+    outro(pc.dim('Run `cc-run add` to add one'))
     return
   }
 
@@ -38,10 +38,10 @@ export async function list() {
   outro(pc.dim(`Config: ${manager.filePath}`))
 }
 
-// ── ccx add ─────────────────────────────────────────────
+// ── cc-run add ─────────────────────────────────────────────
 
 export async function add() {
-  intro(pc.cyan(pc.bold('⚡ ccx add')))
+  intro(pc.cyan(pc.bold('⚡ cc-run add')))
 
   const name = guard(await text({
     message: 'Provider name',
@@ -112,10 +112,10 @@ export async function add() {
   outro(pc.green('✔') + ` Added ${pc.bold(provider.name)}`)
 }
 
-// ── ccx rm ──────────────────────────────────────────────
+// ── cc-run rm ──────────────────────────────────────────────
 
 export async function rm() {
-  intro(pc.cyan(pc.bold('⚡ ccx rm')))
+  intro(pc.cyan(pc.bold('⚡ cc-run rm')))
 
   const providers = manager.getAll()
 
@@ -150,16 +150,16 @@ export async function rm() {
   outro(pc.green('✔') + ` Removed ${pc.bold(target.name)}`)
 }
 
-// ── ccx edit ────────────────────────────────────────────
+// ── cc-run edit ────────────────────────────────────────────
 
 export async function edit() {
-  intro(pc.cyan(pc.bold('⚡ ccx edit')))
+  intro(pc.cyan(pc.bold('⚡ cc-run edit')))
 
   const providers = manager.getAll()
 
   if (providers.length === 0) {
     log.warn('No providers in JSON config')
-    outro(pc.dim('Run `ccx add` to add one'))
+    outro(pc.dim('Run `cc-run add` to add one'))
     return
   }
 

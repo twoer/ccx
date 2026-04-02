@@ -4,9 +4,9 @@ import { join } from 'node:path'
 
 export const getConfigBaseDir = (): string => {
   if (platform() === 'win32') {
-    return join(process.env.APPDATA || join(homedir(), 'AppData', 'Roaming'), 'ccx')
+    return join(process.env.APPDATA || join(homedir(), 'AppData', 'Roaming'), 'cc-run')
   }
-  return join(process.env.XDG_CONFIG_HOME || join(homedir(), '.config'), 'ccx')
+  return join(process.env.XDG_CONFIG_HOME || join(homedir(), '.config'), 'cc-run')
 }
 
 const CONFIG_DIR = getConfigBaseDir()

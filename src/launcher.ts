@@ -44,10 +44,10 @@ function parseArgs(argv: string[]): ParsedArgs {
 
 function showHelp() {
   console.log(`
-  ${pc.cyan(pc.bold('⚡ ccx'))} ${pc.dim(`v${VERSION}`)}
+  ${pc.cyan(pc.bold('⚡ cc-run'))} ${pc.dim(`v${VERSION}`)}
   ${pc.dim('Claude Code launcher')}
 
-  ${pc.bold('Usage:')} ccx [command] [options] [provider-name]
+  ${pc.bold('Usage:')} cc-run [command] [options] [provider-name]
 
   ${pc.bold('Commands:')}
     ${pc.cyan('list')}, ${pc.cyan('ls')}     List all providers
@@ -63,13 +63,13 @@ function showHelp() {
     ${pc.cyan('--reset')}        Reset all configuration
 
   ${pc.bold('Examples:')}
-    ${pc.dim('$')} ccx              ${pc.dim('# Interactive select, current terminal')}
-    ${pc.dim('$')} ccx glm          ${pc.dim('# Fuzzy match provider name')}
-    ${pc.dim('$')} ccx --new        ${pc.dim('# Interactive select, new window')}
-    ${pc.dim('$')} ccx add          ${pc.dim('# Add a new provider')}
-    ${pc.dim('$')} ccx list         ${pc.dim('# List all providers')}
-    ${pc.dim('$')} ccx edit         ${pc.dim('# Edit a provider')}
-    ${pc.dim('$')} ccx rm           ${pc.dim('# Remove a provider')}
+    ${pc.dim('$')} cc-run              ${pc.dim('# Interactive select, current terminal')}
+    ${pc.dim('$')} cc-run glm          ${pc.dim('# Fuzzy match provider name')}
+    ${pc.dim('$')} cc-run --new        ${pc.dim('# Interactive select, new window')}
+    ${pc.dim('$')} cc-run add          ${pc.dim('# Add a new provider')}
+    ${pc.dim('$')} cc-run list         ${pc.dim('# List all providers')}
+    ${pc.dim('$')} cc-run edit         ${pc.dim('# Edit a provider')}
+    ${pc.dim('$')} cc-run rm           ${pc.dim('# Remove a provider')}
 
   ${pc.bold('Providers:')}
     ${pc.cyan('cc-switch')}  ${pc.dim('auto-detected from cc-switch.db')}
@@ -80,7 +80,7 @@ function showHelp() {
 }
 
 function writeTempSettings(env: Record<string, string>): string {
-  const dir = mkdtempSync(join(tmpdir(), 'ccx-'))
+  const dir = mkdtempSync(join(tmpdir(), 'cc-run-'))
   const file = join(dir, 'settings.json')
   writeFileSync(file, JSON.stringify({ env }, null, 2))
   return file
@@ -117,7 +117,7 @@ export async function run(argv: string[]) {
   const { flags, command, query } = parseArgs(argv)
 
   if (flags.version) {
-    console.log(`ccx ${VERSION}`)
+    console.log(`cc-run ${VERSION}`)
     return
   }
 
@@ -144,19 +144,19 @@ export async function run(argv: string[]) {
   }
 
   // Default: launch claude
-  intro(`${pc.cyan(pc.bold('⚡ ccx'))} ${pc.dim('— Claude Code eXecutor')}`)
+  intro(`${pc.cyan(pc.bold('⚡ cc-run'))} ${pc.dim('— Claude Code eXecutor')}`)
   const { providers, source } = await loadProviders()
   log.message(
     pc.dim(`${providers.length} providers from ${source || 'none'} · v${VERSION}\n`) +
-    pc.dim(`  ccx ${pc.cyan('add')}   Add provider    ccx ${pc.cyan('edit')}  Edit provider\n`) +
-    pc.dim(`  ccx ${pc.cyan('list')}  List providers   ccx ${pc.cyan('rm')}    Remove provider\n`) +
-    pc.dim(`  ccx ${pc.cyan('-n')}    New window       ccx ${pc.cyan('help')}  Show help`),
+    pc.dim(`  cc-run ${pc.cyan('add')}   Add provider    cc-run ${pc.cyan('edit')}  Edit provider\n`) +
+    pc.dim(`  cc-run ${pc.cyan('list')}  List providers   cc-run ${pc.cyan('rm')}    Remove provider\n`) +
+    pc.dim(`  cc-run ${pc.cyan('-n')}    New window       cc-run ${pc.cyan('help')}  Show help`),
   )
 
   if (providers.length === 0) {
     log.error('No providers found')
     log.message('')
-    log.message(`  ${pc.cyan('1.')} Run ${pc.bold('ccx add')} to add a provider`)
+    log.message(`  ${pc.cyan('1.')} Run ${pc.bold('cc-run add')} to add a provider`)
     log.message(`  ${pc.cyan('2.')} Or install ${pc.bold('cc-switch')} for auto-detection`)
     log.message('')
     cancel('Setup a provider first')

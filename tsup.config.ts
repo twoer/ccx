@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig({
   entry: {
-    'bin/ccx': 'src/bin.ts',
+    'bin/cc-run': 'src/bin.ts',
   },
   format: 'esm',
   target: 'node18',
