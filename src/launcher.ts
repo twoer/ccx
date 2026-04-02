@@ -10,9 +10,7 @@ import * as config from './config.js'
 import * as commands from './commands.js'
 import type { ParsedArgs, ParsedFlags, Terminal } from './types.js'
 
-const isWin = platform() === 'win32'
-
-const VERSION = '0.1.3'
+const VERSION = '0.2.0'
 
 const SUBCOMMANDS = ['list', 'ls', 'add', 'rm', 'remove', 'edit', 'help']
 
@@ -205,8 +203,7 @@ export async function run(argv: string[]) {
   if (flags.newWindow) {
     const terminal = await selectTerminal()
     const cwd = process.cwd()
-    const isWin = platform() === 'win32'
-    const cmd = isWin
+    const cmd = platform() === 'win32'
       ? `cd /d "${cwd}" & echo === Claude Code [${selected!.name}] === & echo. & claude --settings "${settingsFile}"${yoloFlag} & del /f "${settingsFile}"`
       : `cd '${cwd}'; echo '=== Claude Code [${selected!.name}] ==='; echo; claude --settings '${settingsFile}'${yoloFlag}; rm -f '${settingsFile}'; exec bash`
     terminal.open(cmd)

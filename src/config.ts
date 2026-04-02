@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir, platform } from 'node:os'
 import { join } from 'node:path'
 
-function getConfigBaseDir(): string {
+export const getConfigBaseDir = (): string => {
   if (platform() === 'win32') {
     return join(process.env.APPDATA || join(homedir(), 'AppData', 'Roaming'), 'ccx')
   }

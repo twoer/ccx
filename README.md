@@ -7,7 +7,7 @@ $ ccx
 
 ┌  ⚡ ccx — Claude Code eXecutor
 │
-│  5 providers from cc-switch · v0.1.0
+│  5 providers from cc-switch · v0.2.0
 │    ccx add   Add provider    ccx edit  Edit provider
 │    ccx list  List providers   ccx rm    Remove provider
 │    ccx -n    New window       ccx help  Show help
@@ -29,13 +29,13 @@ $ ccx
 
 cc-switch 直接修改 `~/.claude/settings.json`，把 `ANTHROPIC_BASE_URL`、`ANTHROPIC_AUTH_TOKEN` 等写入全局配置。这意味着无法同时使用多个 provider——全局配置只有一份，切换后会影响所有正在运行的 Claude Code 会话。
 
-ccx 通过临时文件注入：每次启动写入 `/tmp/ccx-xxx/settings.json`，通过 `claude --settings <tmpfile>` 传入，退出后自动清理，全局配置始终保持不变。
+ccx 通过临时文件注入：每次启动写入临时 `settings.json`，通过 `claude --settings <tmpfile>` 传入，退出后自动清理，全局配置始终保持不变。
 
 **2. 打开新终端不可靠**
 
 cc-switch 提供了"在新终端中打开"的功能，但实际使用中发现：如果已经在 Ghostty 中运行了 Claude Code，再次点击"打开终端"并不会新开一个 Ghostty 窗口，而是激活当前已有的窗口，无法实现多 provider 并行使用。
 
-ccx 使用终端原生 API 直接 `open -na` 或 `osascript` 创建新窗口，确保每次都打开独立终端。
+ccx 使用终端原生 API 创建新窗口，确保每次都打开独立终端。
 
 ## 安装
 
@@ -45,9 +45,9 @@ npm i -g @twoer/ccx
 
 ### 环境要求
 
-- macOS
 - Node.js >= 18
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
+- 操作系统：macOS / Windows / Linux
 
 ## 使用
 
@@ -87,7 +87,10 @@ ccx 会自动检测可用的数据源：
 
 ### 2. JSON 文件（手动配置）
 
-手动创建 `~/.config/ccx/providers.json`，或使用 `ccx add` 交互式创建：
+使用 `ccx add` 交互式创建，或手动创建配置文件：
+
+- macOS / Linux：`~/.config/ccx/providers.json`
+- Windows：`%APPDATA%/ccx/providers.json`
 
 ```json
 {
@@ -109,13 +112,21 @@ ccx 会自动检测可用的数据源：
 
 使用 `ccx --new` 时，首次运行会自动检测已安装的终端：
 
+**macOS：**
 - Ghostty
 - iTerm2
 - Warp
 - kitty
 - Terminal.app
 
-配置文件：`~/.config/ccx/config.json`
+**Windows：**
+- Windows Terminal
+- PowerShell
+
+**Linux：**
+- gnome-terminal
+- konsole
+- xterm
 
 ## License
 
