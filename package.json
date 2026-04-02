@@ -4,7 +4,7 @@
   "description": "Claude Code launcher - switch providers and models with ease",
   "type": "module",
   "bin": {
-    "ccx-run": "./dist/bin/ccx-run.js"
+    "ccx": "./dist/bin/ccx-run.js"
   },
   "files": [
     "dist"
