@@ -10,7 +10,7 @@ import * as config from './config.js'
 import * as commands from './commands.js'
 import type { ParsedArgs, ParsedFlags, Terminal } from './types.js'
 
-const VERSION = '0.1.1'
+const VERSION = '0.1.3'
 
 const SUBCOMMANDS = ['list', 'ls', 'add', 'rm', 'remove', 'edit', 'help']
 

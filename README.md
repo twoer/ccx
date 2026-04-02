@@ -19,6 +19,24 @@ $ ccx
 └
 ```
 
+## 为什么做 ccx
+
+日常使用 Claude Code 时，大部分时间用 Claude Official，但偶尔需要临时切换到其他 provider（如 GLM）。
+
+用 cc-switch 切换存在两个问题：
+
+**1. 污染全局配置**
+
+cc-switch 直接修改 `~/.claude/settings.json`，把 `ANTHROPIC_BASE_URL`、`ANTHROPIC_AUTH_TOKEN` 等写入全局配置。这意味着无法同时使用多个 provider——全局配置只有一份，切换后会影响所有正在运行的 Claude Code 会话。
+
+ccx 通过临时文件注入：每次启动写入 `/tmp/ccx-xxx/settings.json`，通过 `claude --settings <tmpfile>` 传入，退出后自动清理，全局配置始终保持不变。
+
+**2. 打开新终端不可靠**
+
+cc-switch 提供了"在新终端中打开"的功能，但实际使用中发现：如果已经在 Ghostty 中运行了 Claude Code，再次点击"打开终端"并不会新开一个 Ghostty 窗口，而是激活当前已有的窗口，无法实现多 provider 并行使用。
+
+ccx 使用终端原生 API 直接 `open -na` 或 `osascript` 创建新窗口，确保每次都打开独立终端。
+
 ## 安装
 
 ```bash
